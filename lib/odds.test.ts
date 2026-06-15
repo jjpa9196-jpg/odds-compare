@@ -76,3 +76,38 @@ describe("arbitrage", () => {
     expect(r.sum).toBeNull();
   });
 });
+
+import { deviation } from "./odds";
+
+describe("deviation", () => {
+  const platforms = [
+    { name: "bestxx", isReference: true, odds: { "1": 2.10, "X": 3.0, "2": 3.0 } },
+    { name: "c1", odds: { "1": 2.30, "X": 3.0, "2": 3.0 } },
+    { name: "c2", odds: { "1": 2.30, "X": 3.0, "2": 3.0 } },
+  ];
+  it("基准低于竞品均值 → 负偏离并标 low", () => {
+    const d = deviation(platforms, "eu", 0.03);
+    expect(d["1"]!.pct).toBeCloseTo(2.1 / 2.3 - 1, 4);
+    expect(d["1"]!.flag).toBe("low");
+    expect(d["X"]!.flag).toBe("ok");
+  });
+  it("没有基准平台 → 全 null", () => {
+    const d = deviation([{ name: "c1", odds: { "1": 2.0, "X": 3, "2": 3 } }], "eu", 0.03);
+    expect(d["1"]).toBeNull();
+  });
+  it("基准在但竞品一家都没填该结果 → 该结果 null", () => {
+    const only = [
+      { name: "bestxx", isReference: true, odds: { "1": 2.0, "X": null, "2": null } },
+    ];
+    const d = deviation(only, "eu", 0.03);
+    expect(d["1"]).toBeNull();
+  });
+});
+
+describe("截图数据回归（香港盘）", () => {
+  it("沙特 6.20/3.20/0.48 港盘 → 欧赔与隐含概率", () => {
+    expect(toEuro(6.2, "hk")).toBeCloseTo(7.2, 5);
+    expect(toEuro(0.48, "hk")).toBeCloseTo(1.48, 5);
+    expect(impliedProb(toEuro(0.48, "hk"))).toBeCloseTo(1 / 1.48, 5);
+  });
+});

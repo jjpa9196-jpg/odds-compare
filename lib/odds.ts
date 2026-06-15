@@ -82,3 +82,39 @@ export function arbitrage(
   for (const o of OUTCOMES) stakes[o] = inv[o] / sum;
   return { sum, hasArb: sum < 1, profitRate: 1 / sum - 1, stakes };
 }
+
+export type DeviationFlag = "high" | "low" | "ok";
+export interface DeviationItem {
+  refEuro: number;
+  compMean: number;
+  pct: number; // refEuro/compMean - 1
+  flag: DeviationFlag;
+}
+export type DeviationByOutcome = Record<Outcome, DeviationItem | null>;
+
+/** bestxx 相对竞品均值的偏离度；threshold 默认 0.03 */
+export function deviation(
+  platforms: Pick<Platform, "name" | "isReference" | "odds">[],
+  format: OddsFormat,
+  threshold = 0.03
+): DeviationByOutcome {
+  const ref = platforms.find((p) => p.isReference);
+  const comps = platforms.filter((p) => !p.isReference);
+  const result = {} as DeviationByOutcome;
+  for (const o of OUTCOMES) {
+    const refEuro = ref ? toEuro(ref.odds[o], format) : null;
+    const compEuros = comps
+      .map((p) => toEuro(p.odds[o], format))
+      .filter((v): v is number => v !== null);
+    if (refEuro === null || compEuros.length === 0) {
+      result[o] = null;
+      continue;
+    }
+    const compMean = compEuros.reduce((a, b) => a + b, 0) / compEuros.length;
+    const pct = refEuro / compMean - 1;
+    const flag: DeviationFlag =
+      pct > threshold ? "high" : pct < -threshold ? "low" : "ok";
+    result[o] = { refEuro, compMean, pct, flag };
+  }
+  return result;
+}
