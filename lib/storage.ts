@@ -9,7 +9,6 @@ export function defaultPlatforms(): PlatformMeta[] {
     { name: "bestxx", isReference: true },
     { name: "bc.game" },
     { name: "qzino" },
-    { name: "188bet" },
   ];
 }
 
