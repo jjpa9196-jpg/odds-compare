@@ -32,8 +32,8 @@ export function emptyOdds(platformCount: number): Record<string, MarketOdds> {
   return odds;
 }
 
-/** 生成一场空比赛（id 由调用方传入） */
-export function newMatch(id: string, name = "新比赛"): Match {
+/** 生成一场空比赛（id、当前时间戳由调用方传入，避免在纯逻辑里用 Date） */
+export function newMatch(id: string, now: number, name = "新比赛"): Match {
   const platforms = defaultPlatforms();
   return {
     id,
@@ -44,14 +44,31 @@ export function newMatch(id: string, name = "新比赛"): Match {
     oddsFormat: "hk",
     platforms,
     odds: emptyOdds(platforms.length),
+    createdAt: now,
+    updatedAt: now,
   };
+}
+
+/** 判断 localStorage 里的记录是否是当前数据结构（旧版直接丢弃，避免崩溃） */
+export function isValidMatch(m: unknown): m is Match {
+  const x = m as Match;
+  return (
+    !!x &&
+    typeof x === "object" &&
+    typeof x.id === "string" &&
+    !!x.odds &&
+    Array.isArray(x.platforms) &&
+    !!x.sport &&
+    typeof x.updatedAt === "number"
+  );
 }
 
 export function loadMatches(): Match[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as Match[]) : [];
+    const arr = raw ? (JSON.parse(raw) as unknown[]) : [];
+    return Array.isArray(arr) ? arr.filter(isValidMatch) : [];
   } catch {
     return [];
   }

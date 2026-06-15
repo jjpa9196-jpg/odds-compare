@@ -85,6 +85,8 @@ export interface Match {
   oddsFormat: OddsFormat;
   platforms: PlatformMeta[];
   odds: Record<string, MarketOdds>; // key = MarketDef.key
+  createdAt: number; // 毫秒时间戳
+  updatedAt: number;
 }
 
 /** 传给计算函数的合成形态：平台信息 + 它在某玩法下的赔率 */
