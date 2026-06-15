@@ -1,5 +1,30 @@
 // lib/types.ts
-export type OddsFormat = "eu" | "hk"; // 欧赔 / 香港盘
+export type OddsFormat = "hk" | "eu" | "id" | "my"; // 香港盘 / 欧赔 / 印尼盘 / 马来盘
+
+export const ODDS_FORMATS: { key: OddsFormat; label: string }[] = [
+  { key: "hk", label: "香港盘 HK" },
+  { key: "eu", label: "欧赔 EU" },
+  { key: "id", label: "印尼盘 ID" },
+  { key: "my", label: "马来盘 MY" },
+];
+
+export function formatLabel(fmt: OddsFormat): string {
+  return ODDS_FORMATS.find((f) => f.key === fmt)?.label ?? fmt;
+}
+
+/** 输入提示：每种盘口的有效范围 */
+export function formatHint(fmt: OddsFormat): string {
+  switch (fmt) {
+    case "hk":
+      return "香港盘需 > 0";
+    case "eu":
+      return "欧赔需 > 1";
+    case "id":
+      return "印尼盘 |值| ≥ 1（正负皆可）";
+    case "my":
+      return "马来盘 -1~1（不含 0）";
+  }
+}
 
 export type Sport = "足球" | "篮球" | "网球" | "其他";
 export const SPORTS: Sport[] = ["足球", "篮球", "网球", "其他"];

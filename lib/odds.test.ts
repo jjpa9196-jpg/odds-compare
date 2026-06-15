@@ -24,6 +24,17 @@ describe("toEuro", () => {
   it("null 返回 null", () => {
     expect(toEuro(null, "hk")).toBeNull();
   });
+  it("印尼盘：正=值+1，负=1-1/值", () => {
+    expect(toEuro(2.0, "id")).toBeCloseTo(3.0, 5); // 正
+    expect(toEuro(-2.0, "id")).toBeCloseTo(1.5, 5); // 负
+    expect(toEuro(0.5, "id")).toBeNull(); // |值|<1 非法
+  });
+  it("马来盘：正(0~1]=值+1，负[-1~0)=1-1/值", () => {
+    expect(toEuro(0.5, "my")).toBeCloseTo(1.5, 5); // 正
+    expect(toEuro(-0.5, "my")).toBeCloseTo(3.0, 5); // 负
+    expect(toEuro(1.5, "my")).toBeNull(); // 超出 ±1 非法
+    expect(toEuro(0, "my")).toBeNull(); // 0 非法
+  });
 });
 
 describe("impliedProb", () => {

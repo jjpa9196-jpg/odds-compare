@@ -1,7 +1,7 @@
 // app/page.tsx
 "use client";
 import { useEffect, useState } from "react";
-import { Match, MARKETS, marketDef, OddsFormat, Sport, SPORTS } from "@/lib/types";
+import { Match, MARKETS, marketDef, OddsFormat, ODDS_FORMATS, Sport, SPORTS } from "@/lib/types";
 import { loadMatches, saveMatches, newMatch } from "@/lib/storage";
 import { setLine } from "@/lib/match";
 import { matchToCsv, downloadText } from "@/lib/exportCsv";
@@ -139,8 +139,11 @@ export default function Home() {
               value={current.oddsFormat}
               onChange={(e) => update({ ...current, oddsFormat: e.target.value as OddsFormat })}
             >
-              <option value="hk">香港盘</option>
-              <option value="eu">欧赔</option>
+              {ODDS_FORMATS.map((f) => (
+                <option key={f.key} value={f.key}>
+                  {f.label}
+                </option>
+              ))}
             </select>
           </div>
 

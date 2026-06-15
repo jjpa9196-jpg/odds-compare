@@ -1,5 +1,5 @@
 // lib/exportCsv.ts
-import { Match, MARKETS } from "./types";
+import { formatLabel, Match, MARKETS } from "./types";
 import { deviation } from "./odds";
 import { marketPlatforms } from "./match";
 
@@ -23,7 +23,7 @@ export function matchToCsv(match: Match): string {
   line(["比赛", match.name]);
   line(["运动", match.sport]);
   line(["对阵", `${match.home || "主队"} vs ${match.away || "客队"}`]);
-  line(["赔率格式", match.oddsFormat === "hk" ? "香港盘" : "欧赔"]);
+  line(["赔率格式", formatLabel(match.oddsFormat)]);
   line(["更新时间", new Date(match.updatedAt).toLocaleString("zh-CN")]);
   rows.push("");
 

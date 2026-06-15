@@ -4,10 +4,22 @@ import { OddsFormat, PricedPlatform } from "./types";
 /** 把用户填的原始赔率按格式转成欧赔；null/非法返回 null */
 export function toEuro(value: number | null, format: OddsFormat): number | null {
   if (value === null || !Number.isFinite(value)) return null;
-  if (format === "hk") {
-    return value > 0 ? value + 1 : null;
+  switch (format) {
+    case "eu": // 欧赔（小数）
+      return value > 1 ? value : null;
+    case "hk": // 香港盘：欧赔 = 港赔 + 1
+      return value > 0 ? value + 1 : null;
+    case "id": // 印尼盘：|值| ≥ 1，正=港赔，负=1-1/值
+      if (value >= 1) return value + 1;
+      if (value <= -1) return 1 - 1 / value;
+      return null;
+    case "my": // 马来盘：-1~1（不含0），正=港赔，负=1-1/值
+      if (value > 0 && value <= 1) return value + 1;
+      if (value < 0 && value >= -1) return 1 - 1 / value;
+      return null;
+    default:
+      return null;
   }
-  return value > 1 ? value : null;
 }
 
 /** 隐含概率 = 1/欧赔；欧赔需 > 0 */

@@ -1,7 +1,7 @@
 // components/PrintReport.tsx
 // 仅打印时可见的干净报表（白底黑字，方便存 PDF 发给别人）。
 "use client";
-import { Match, MARKETS } from "@/lib/types";
+import { formatLabel, Match, MARKETS } from "@/lib/types";
 import { consistency, deviation } from "@/lib/odds";
 import { marketPlatforms } from "@/lib/match";
 
@@ -20,7 +20,7 @@ export function PrintReport({ match }: { match: Match }) {
       <h1 className="text-xl font-bold">{match.name || "赔率对比"}</h1>
       <p className="mt-1 text-sm text-gray-700">
         {match.sport} · {match.home || "主队"} vs {match.away || "客队"} ·{" "}
-        {match.oddsFormat === "hk" ? "香港盘" : "欧赔"} ·{" "}
+        {formatLabel(match.oddsFormat)} ·{" "}
         {new Date(match.updatedAt).toLocaleString("zh-CN")}
       </p>
       <p className="mt-0.5 text-xs text-gray-500">基准平台：bestxx（偏离度均相对它）</p>

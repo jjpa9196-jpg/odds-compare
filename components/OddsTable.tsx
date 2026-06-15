@@ -1,7 +1,7 @@
 // components/OddsTable.tsx
 "use client";
 import { useState } from "react";
-import { Match, marketDef } from "@/lib/types";
+import { formatHint, Match, marketDef } from "@/lib/types";
 import { toEuro } from "@/lib/odds";
 import { addPlatform, removePlatform, renamePlatform, setOdd } from "@/lib/match";
 
@@ -34,7 +34,7 @@ export function OddsTable({
     onChange(setOdd(match, marketKey, idx, key, v));
   }
 
-  const hint = match.oddsFormat === "hk" ? "香港盘需 > 0" : "欧赔需 > 1";
+  const hint = formatHint(match.oddsFormat);
 
   return (
     <div>
